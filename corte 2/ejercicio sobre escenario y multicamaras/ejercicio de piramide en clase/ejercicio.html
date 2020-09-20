@@ -20,19 +20,34 @@
     <script src="js/OrbitControls.js"> </script>
     <script>
 
+     var aspect, controls;
+     var scene = new THREE.Scene();
+     var camera = new THREE.PerspectiveCamera(50, winW / winH, 0.01, 10);
+     var renderer = new THREE.WebGLRenderer({antialias: true});
+     renderer.setSize(winW, winH);
+     document.body.appendChild(renderer.domElement);
+     var winW=window.innerWidth;
+     var winH = window.innerHeight;
+     var radius = 4;
+     var height = 5;
+	
+		init();
+		animate();
     function init() {
-
+	    
+        var aspect, controls;
+	    
         // Escena
-        var control;
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);    
-        renderer = new THREE.WebGLRenderer();
-        renderer.setClearColor(0x000000, 1.0);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        scene.control= new THREE.OrbitControls(camera,render.documentElement);
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
 
-            var size = 100;
-			var arrowSize = 4;
+			controls = new THREE.OrbitControls( camera, renderer.domElement );	
+            var size = 10;
+			var arrowSize = 1;
 			var divisions = size;
 			var origin = new THREE.Vector3( 0, 0, 0 );
 			var x = new THREE.Vector3( 1, 0, 0 );
@@ -40,12 +55,9 @@
 		  	var z = new THREE.Vector3( 0, 0, 1 );
 			var color1 = new THREE.Color( 0xFFFFFF );
 		  	var color2 = new THREE.Color( 0x333333 );
-		  	var colorR = new THREE.Color( 0xAA0000 );
-		  	var colorG = new THREE.Color( 0x00AA00 );
-		  	var colorB = new THREE.Color( 0x0000AA );
-			var colorRd = new THREE.Color( 0xAA6666 );
-		  	var colorGd = new THREE.Color( 0x66AA66 );
-		  	var colorBd = new THREE.Color( 0x6666AA );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
 		  
 		//Crear la Grilla
 		var axesHelper1 = new THREE.AxesHelper( size/100 );
@@ -54,32 +66,46 @@
 		var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
 		var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
 		var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
-            
+	    
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+	    
         //Flechas
         var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
         var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
         var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
-			
+		
+	    
+	//CREAR LAS GEOMETRÍAS
+            
+       var geometry = new THREE.CylinderGeometry(0, radius, height, 4, 1)
+       var material = new THREE.MeshNormalMaterial();
+       var pyramid = new THREE.Mesh(geometry, material);
+       scene.add(pyramid);
+            camera.position.z = 10;
+	    
         //Cámara
-        camera.position.x = 10;
-        camera.position.y = 10;
-        camera.position.z = 40;
-        camera.lookAt(scene.position);
+        //camera.position.x = 10;
+        //camera.position.y = 10;
+        //camera.position.z = 40;
+        //camera.lookAt(scene.position);
 
-        var geoTriangulo = new THREE.Geometry();
+        //var geoTriangulo = new THREE.Geometry();
 
-        var v1 = new THREE.Vector3 ( 2.0, 0.5, 0.0 );
-        var v2 = new THREE.Vector3 ( 0.0, -2.0, 0.0 );
-        var v3 = new THREE.Vector3 ( -0.5, -1.5, 0.0 );
-        geoTriangulo.vertices.push ( v1 );
-        geoTriangulo.vertices.push ( v2 );
-        geoTriangulo.vertices.push ( v3 );
+        //var v1 = new THREE.Vector3 ( 2.0, 0.5, 0.0 );
+        //var v2 = new THREE.Vector3 ( 0.0, -2.0, 0.0 );
+        //var v3 = new THREE.Vector3 ( -0.5, -1.5, 0.0 );
+        //geoTriangulo.vertices.push ( v1 );
+        //geoTriangulo.vertices.push ( v2 );
+        //geoTriangulo.vertices.push ( v3 );
 
-        geoTriangulo.faces.push ( new THREE.Face3 ( 0, 1, 2) );
-        geoTriangulo.computeFaceNormals ();
+        //geoTriangulo.faces.push ( new THREE.Face3 ( 0, 1, 2) );
+        //geoTriangulo.computeFaceNormals ();
 
-        var matPlano = new THREE.MeshBasicMaterial ();
-        var triangulo = new THREE.Mesh (geoTriangulo, matPlano);
+        //var matPlano = new THREE.MeshBasicMaterial ();
+        //var triangulo = new THREE.Mesh (geoTriangulo, matPlano);
         
         
 
@@ -91,7 +117,7 @@
 	    scene.add(arrowX);	
 		scene.add(arrowY);	
 		scene.add(arrowZ);
-        scene.add (triangulo);
+        
 
         render();
     }
@@ -103,7 +129,7 @@
     }
 
    
-    window.onload = init;
+    
 			
       </script>
   </body>
