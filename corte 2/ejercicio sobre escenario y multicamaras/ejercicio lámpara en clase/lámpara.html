@@ -1,0 +1,178 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>piramide</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+    <script>
+		var aspect, controls;
+        var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(50, winW / winH, 0.01, 10);
+        var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(winW, winH);
+document.body.appendChild(renderer.domElement);
+        var winW=window.innerWidth;
+var winH = window.innerHeight;
+        var radius = 4;
+var height = 5;
+	
+		init();
+		animate();
+	
+		function init(){
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			controls = new THREE.OrbitControls( camera, renderer.domElement );			
+			
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0xFFFFFF );
+		  	var color2 = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA00 );
+		  	var colorB = new THREE.Color( 0x333366 );
+		  
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+		  	var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		  	var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+            
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+            
+            //ILUMINACION 
+			
+			var hemisphereLight = new THREE.HemisphereLight(0xfffafa,0x000000, .9)
+			scene.add(hemisphereLight);
+			sun = new THREE.DirectionalLight( 0xcdc1c5, 0.9);
+			sun.position.set( 20,-10,20 );
+			sun.castShadow = true;
+			scene.add(sun);
+            
+            //extrusion
+            
+            var pointLight1 = new THREE.PointLight( 0xffffff, .2, 0 );
+            pointLight1.position.set( 10, 10, -10);
+            scene.add( pointLight1 );
+			
+			var pointLight2 = new THREE.PointLight( 0xffffff, .5, 100 );
+            pointLight2.position.set( 20, 20, 20 );
+            scene.add( pointLight2 );
+            
+            var curve2D = [];
+                curve2D[0] = new THREE.Vector2( 8, 0 );
+                curve2D[1] = new THREE.Vector2( 5, 10 );
+                curve2D[2] = new THREE.Vector2( 0, 0 );
+				
+			var shape = new THREE.Shape();
+			shape.moveTo(0,0);
+			shape.splineThru(curve2D);
+            
+            var material3 = new THREE.LineBasicMaterial( { color : 0xffffff } );
+            var resolution = 50;
+            var points = shape.getPoints( resolution );
+            var geometry3 = new THREE.BufferGeometry().setFromPoints( points );
+            
+            // Create the final object to add to the scene
+            var curveObject = new THREE.Line( geometry3, material3 );
+			
+			var geometry3 = new THREE.LatheGeometry( points, 10 );
+			var material3= new THREE.MeshStandardMaterial( { 
+				color: 0xfffafa, 
+				metalness: 0.5, 
+				roughness: 0.1,
+				opacity: 0.75,
+				transparent: true			
+			} );
+           
+			var lathe = new THREE.Mesh( geometry3, material3 );
+			scene.add( lathe );
+			scene.add( curveObject );
+
+			//CREAR LAS GEOMETRÍAS
+            
+            //texturas_mesa
+            var texture2 = new THREE.TextureLoader().load( 'maderamesa.png' );
+            var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
+           var pata1base = new THREE.BoxBufferGeometry(
+   5.4, 10, 6.6);
+            //patas
+            var pata1 = new THREE.Mesh(pata1base, material2);
+            var pata2 = new THREE.Mesh(pata1base, material2);
+            pata2.position.x=-7;
+            pata2.position.y=-8;
+            pata1.position.x=7;
+            pata1.position.y=-8;
+            scene.add(pata2);
+            scene.add(pata1);
+            
+            //mesa
+            var base = new THREE.BoxBufferGeometry(20, 2.8, 8);
+             var mesa = new THREE.Mesh(base, material2);
+            mesa.position.y=-3.9;
+scene.add(mesa);
+             
+            //piramide
+            var geometry2 = new THREE.CylinderGeometry(0, radius, height, 4, 150)
+            var texture = new THREE.TextureLoader().load( 'madera.png' );
+            var material = new THREE.MeshBasicMaterial({ map: texture });
+            var pyramid = new THREE.Mesh(geometry2, material);
+scene.add(pyramid);
+            
+            //bombillo
+             var texturebom = new THREE.TextureLoader().load( 'bombillo.png' );
+            var materialbom = new THREE.MeshBasicMaterial({ map: texturebom });
+            var  geometry5 = new THREE.OctahedronBufferGeometry(4, 2);
+            var bombillo = new THREE.Mesh(geometry5, materialbom);
+          
+           
+            bombillo.position.y=5;
+            scene.add(bombillo);
+            
+            camera.position.z = 30;
+            camera.position.X = 20;
+            
+            
+           
+		  	scene.add( arrowX );	
+		  	scene.add( arrowY );	
+		  	scene.add( arrowZ );	
+			
+		
+			}//
+    
+    function animate() {
+        render();
+		controls.update();
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html>
