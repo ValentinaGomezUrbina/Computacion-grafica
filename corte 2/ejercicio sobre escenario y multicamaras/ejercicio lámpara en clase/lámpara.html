@@ -74,10 +74,32 @@ var height = 5;
 			scene.add(sun);
 			
 			//CREAR LAS GEOMETRÍAS
-            //piramide
+            
+	 //texturas_mesa
+            var texture2 = new THREE.TextureLoader().load( 'maderamesa.png' );
+            var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
+           var pata1base = new THREE.BoxBufferGeometry(
+   5.4, 10, 6.6);
+            //patas
+            var pata1 = new THREE.Mesh(pata1base, material2);
+            var pata2 = new THREE.Mesh(pata1base, material2);
+            pata2.position.x=-7;
+            pata2.position.y=-8;
+            pata1.position.x=7;
+            pata1.position.y=-8;
+            scene.add(pata2);
+            scene.add(pata1);
+            
+            //mesa
+            var base = new THREE.BoxBufferGeometry(20, 2.8, 8);
+             var mesa = new THREE.Mesh(base, material2);
+            mesa.position.y=-3.9;
+scene.add(mesa);
+			//piramide
             var geometry2 = new THREE.CylinderGeometry(0, radius, height, 4, 150)
-var material = new THREE.MeshNormalMaterial();
-var pyramid = new THREE.Mesh(geometry2, material);
+var texture = new THREE.TextureLoader().load( 'madera.png' );
+            var material = new THREE.MeshBasicMaterial({ map: texture });
+            var pyramid = new THREE.Mesh(geometry2, material);
 scene.add(pyramid);
             
             camera.position.z = 30;
@@ -226,9 +248,9 @@ scene.add(pyramid);
 			geoTriangulo11.computeFaceNormals();
 			
 			//MATERIAL Y CREACIÓN DEL OBJETO
-            var matPlano = new THREE.MeshLambertMaterial({ color:'purple' });
-			var matPlano1 = new THREE.MeshLambertMaterial({ color:'purple' });
-			var matPlano2 = new THREE.MeshLambertMaterial({ color:'purple' });
+            var matPlano = new THREE.MeshBasicMaterial({ map: texture });
+			var matPlano1 = new THREE.MeshBasicMaterial({ color:'white' });
+			var matPlano2 = new THREE.MeshBasicMaterial({ color:'white' });
 			
 			//CREAR LOS OBJETOS
 			
@@ -244,27 +266,7 @@ scene.add(pyramid);
 			triangulo9 = new THREE.Mesh( geoTriangulo9, matPlano1 );
 			triangulo10 = new THREE.Mesh( geoTriangulo10, matPlano1 );
 			triangulo11 = new THREE.Mesh( geoTriangulo11, matPlano1 );
-			
-            
 
-            //GEOMETRÍA
-            //var geoTriangulo = new THREE.Geometry();
-			//VERTICES
-			//var v0 = new THREE.Vector3( 2.0, 0.5, 0.0);
-			//var v1 = new THREE.Vector3( 0.0,-2.0, 0.0);
-			//var v2 = new THREE.Vector3(-0.5,-1.5, 0.0);
-			//geoTriangulo.vertices.push( v0 );
-			//geoTriangulo.vertices.push( v1 );
-			//geoTriangulo.vertices.push( v2 );
-			//CARAS
-			//geoTriangulo.faces.push( new THREE.Face3(0,1,2) );
-			//geoTriangulo.computeFaceNormals();//
-			//MATERIAL Y CREACIÓN DEL OBJETO
-            //var matPlano = new THREE.MeshBasicMaterial( { color: 0xFFFFFF } );
-			//CREAR LOS OBJETOS
-			//var triangulo = new THREE.Mesh( geoTriangulo, matPlano );
-		  	//AGREGAR A LA ESCENA
-		  	//scene.add( triangulo );
             scene.add( triangulo, triangulo1, triangulo2, triangulo3 );
 			scene.add( triangulo4, triangulo5);
 			scene.add( triangulo6, triangulo7);
@@ -275,12 +277,8 @@ scene.add(pyramid);
 		  	scene.add( arrowY );	
 		  	scene.add( arrowZ );	
 			
-			//camera.position.x = 5;
-			//camera.position.y = 10;	 
-		  	//camera.position.z =  10;
-			
-		  	//camera.lookAt( origin );
-			}//
+		
+			}
     
     function animate() {
         render();
