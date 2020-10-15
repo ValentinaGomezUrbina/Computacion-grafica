@@ -1,0 +1,164 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>LLanta_Maria Valentina Gómez Urbina</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+    <script>
+		var aspect, controls;
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(50, winW / winH, 0.01, 10);
+        var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(winW, winH);
+document.body.appendChild(renderer.domElement);
+        var winW=window.innerWidth;
+        var winH = window.innerHeight;
+        var radius = 4;
+        var height = 5;
+	
+		init();
+		animate();
+	
+		function init(){
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			controls = new THREE.OrbitControls( camera, renderer.domElement );			
+			
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0xFFFFFF );
+		  	var color2 = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA00 );
+		  	var colorB = new THREE.Color( 0x333366 );
+		  
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+		  	var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		  	var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+            
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+            
+            //ILUMINACION 
+			
+			var hemisphereLight = new THREE.HemisphereLight(0xfffafa,0x000000, .9)
+			scene.add(hemisphereLight);
+			sun = new THREE.DirectionalLight( 0xcdc1c5, 0.9);
+			sun.position.set( 20,-10,20 );
+			sun.castShadow = true;
+			scene.add(sun);
+            
+            
+			//CREAR LAS GEOMETRÍAS
+            
+            //llanta completa
+            
+            var textureLlanta = new THREE.TextureLoader().load('gomallanta.jpg');
+            var materialLLanta = new THREE.MeshBasicMaterial({ map: textureLlanta });
+            var radius=5;
+            var tubeRadius=2;
+            var radialSegments = 8;  
+            var tubularSegments = 24;  
+            var geometryLlanta = new THREE.TorusBufferGeometry(radius, tubeRadius,radialSegments, tubularSegments);
+            var llanta = new THREE.Mesh(geometryLlanta, materialLLanta);
+            
+           scene.add(llanta);
+            
+            //partes internas de la llanta
+            var textureacero = new THREE.TextureLoader().load('acero.jpg');
+            var geometry = new THREE.PlaneBufferGeometry( 2.5, 2.5, 6 );
+            var material = new THREE.MeshBasicMaterial( {map: textureacero, side: THREE.DoubleSide} );
+            var plane = new THREE.Mesh( geometry, material );
+            var plane2 = new THREE.Mesh( geometry, material );
+            var plane3 = new THREE.Mesh( geometry, material );
+            var plane4 = new THREE.Mesh( geometry, material );
+            
+            //mover las posiciones para que quedenacordes a la figura
+            
+            plane.position.x=2;
+            plane.position.y=2;
+            plane2.position.x=2;
+            plane2.position.y=-2;
+            plane3.position.x=-2;
+            plane3.position.y=-2;
+            plane4.position.x=-2;
+            plane4.position.y=2;
+            
+            //agregar la figura a la escena
+            
+            scene.add( plane );
+            scene.add( plane2 );
+            scene.add( plane3 );
+            scene.add( plane4 );
+        
+            //bordes metalicos llanta
+        
+            var radius2=5;
+            var tubeRadius2=2;
+            var radialSegments2 = 8;  
+            var tubularSegments2 = 10;  
+            var geometrytoroide = new THREE.TorusBufferGeometry(radius2, tubeRadius2,radialSegments2, tubularSegments2);
+            var toroidecentral = new THREE.Mesh(geometrytoroide, material);
+            
+           scene.add(toroidecentral);
+
+            // circulo del centro
+            
+            var innerRadius = 0.5; 
+            var outerRadius = 1.5;  // ui: outerRadius
+            var thetaSegments = 18;  // ui: thetaSegments
+            var geometrycirculo = new THREE.RingBufferGeometry(innerRadius, outerRadius, thetaSegments);
+            var circulo = new THREE.Mesh(geometrycirculo, material);
+            
+            
+            scene.add(circulo);
+            //camara posicion
+            
+            camera.position.z = 30;
+            camera.position.X = 20;
+            
+            
+           
+		  	scene.add( arrowX );	
+		  	scene.add( arrowY );	
+		  	scene.add( arrowZ );	
+			
+		
+			}//
+    
+    function animate() {
+        render();
+		controls.update();
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html>
